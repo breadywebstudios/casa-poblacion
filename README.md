@@ -30,4 +30,4 @@ Settings (Supabase URL, publishable key, phone, links) are in `config.js`.
 ## Admin features
 
 - **Team tab** — add or remove admin users. Adding a new email creates its login with the temporary password you set; an email that already has a login keeps its password. Removing only revokes Casa admin access (logins are shared with other sites in this Supabase project). Powered by the Edge Function in `supabase/functions/casa-admin-users`.
-- **Export to Excel** — downloads the bookings currently shown (tab + date range + search) as an `.xlsx` file with real date columns, filters and a frozen header.
+- **Export to Excel** — downloads the bookings currently shown (tab + date range + search) as an `.xlsx` file with real date columns and filters.
