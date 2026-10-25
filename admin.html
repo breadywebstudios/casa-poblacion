@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Bookings · Casa Poblacion Admin</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c1915'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-style='italic' font-size='36' fill='%23c9a66b' text-anchor='middle'%3ECP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{background:var(--ivory)}
+  .topbar{background:var(--ink);color:var(--ivory);padding:16px 0}
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .topbar .who{font-size:13px;color:rgba(248,244,236,.6);display:flex;gap:16px;align-items:center}
+  .topbar button{background:none;border:1px solid rgba(248,244,236,.3);color:var(--ivory);padding:8px 14px;font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+  .topbar button:hover{border-color:var(--gold-2);color:var(--gold-2)}
+  main{padding:44px 0 80px}
+  .login{max-width:420px;margin:10vh auto;background:var(--paper);border:1px solid var(--line);padding:44px 40px}
+  .login h1{font-size:44px;margin:12px 0 26px}
+  .login .field{margin-bottom:22px}
+  .login .field label{color:var(--muted)}
+  .login .field input{color:var(--ink);border-bottom-color:var(--line)}
+  .login .field input:focus{border-color:var(--gold)}
+  .login .btn{width:100%;justify-content:center}
+  .err{color:#a5432f;font-size:14px;margin:6px 0 16px;min-height:1px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+  .head h1{font-size:52px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tabs button{background:none;border:1px solid var(--line);padding:10px 16px;font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;color:var(--ink-2)}
+  .tabs button b{font-weight:500;color:var(--gold);margin-left:6px}
+  .tabs button.on{background:var(--ink);color:var(--ivory);border-color:var(--ink)}
+  .tools{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+  .tools input,.tools select{background:var(--paper);border:1px solid var(--line);padding:11px 14px;font-size:14px;min-width:220px}
+  .list{display:grid;gap:14px}
+  .card{background:var(--paper);border:1px solid var(--line);display:grid;grid-template-columns:150px 1fr auto;gap:24px;padding:22px 24px;align-items:start}
+  .date{border-right:1px solid var(--line);padding-right:20px}
+  .date b{display:block;font:400 38px/1 var(--serif)}
+  .date span{font:500 11px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .date em{display:block;margin-top:8px;font:italic 400 18px/1 var(--serif);color:var(--gold)}
+  .info h3{font-size:26px;margin-bottom:4px}
+  .meta{font-size:14px;color:var(--ink-2);display:flex;gap:6px 18px;flex-wrap:wrap}
+  .meta a{border-bottom:1px solid var(--gold-soft)}
+  .msg{margin-top:10px;font-size:14.5px;color:var(--ink-2);background:var(--ivory);padding:10px 14px;border-left:2px solid var(--gold-soft);white-space:pre-wrap}
+  .note{margin-top:10px;display:flex;gap:8px}
+  .note input{flex:1;border:0;border-bottom:1px solid var(--line);background:none;padding:6px 0;font-size:14px}
+  .note button{background:none;border:0;color:var(--gold);font:500 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  .side{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:150px}
+  .pill{align-self:flex-end;font:500 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;padding:7px 10px;border:1px solid currentColor;margin-bottom:6px}
+  .pill.pending{color:#a8834a}.pill.approved{color:#3f7a52}.pill.declined{color:#a5432f}.pill.cancelled{color:#7a6f61}
+  .act{border:1px solid var(--line);background:none;padding:10px 12px;font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:.2s}
+  .act.ok{background:#3f7a52;color:#fff;border-color:#3f7a52}.act.ok:hover{background:#2f5e3e}
+  .act.no:hover{border-color:#a5432f;color:#a5432f}
+  .act:disabled{opacity:.5;cursor:wait}
+  .small{font-size:12px;color:var(--muted)}
+  .empty{text-align:center;padding:70px 20px;color:var(--muted);font:italic 300 24px/1.4 var(--serif)}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--ivory);padding:14px 22px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw}
+  .toast.show{opacity:1}
+  .toast.bad{background:#a5432f}
+  [hidden]{display:none!important}
+  @media (max-width:760px){
+    .card{grid-template-columns:1fr}
+    .date{border-right:0;border-bottom:1px solid var(--line);padding:0 0 14px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+    .date em{margin:0}
+    .side{flex-direction:row;flex-wrap:wrap}
+    .pill{align-self:center;margin:0 auto 0 0}
+    .head h1{font-size:40px}
+    .tools input,.tools select{min-width:0;flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="./" style="color:var(--ivory)"><b>Casa Poblacion</b><small>Bookings admin</small></a>
+    <div class="who" id="who" hidden><span id="whoEmail"></span><button id="outBtn">Sign out</button></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <form class="login" id="login" hidden>
+    <div class="eyebrow">Staff only</div>
+    <h1>Sign in</h1>
+    <div class="field"><label for="lEmail">Email</label><input id="lEmail" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="lPass">Password</label><input id="lPass" type="password" autocomplete="current-password" required></div>
+    <div class="err" id="lErr" role="alert"></div>
+    <button class="btn btn-solid" id="lBtn">Sign in</button>
+  </form>
+
+  <div id="app" hidden>
+    <div class="head">
+      <div><div class="eyebrow">Reservations</div><h1>Booking requests</h1></div>
+      <div class="tabs" id="tabs">
+        <button data-s="pending" class="on">Pending<b></b></button>
+        <button data-s="approved">Approved<b></b></button>
+        <button data-s="declined">Declined<b></b></button>
+        <button data-s="all">All<b></b></button>
+      </div>
+    </div>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Search name, phone, reference…">
+      <select id="when">
+        <option value="upcoming">Upcoming events</option>
+        <option value="past">Past events</option>
+        <option value="any">Any date</option>
+      </select>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
