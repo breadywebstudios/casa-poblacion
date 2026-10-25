@@ -17,7 +17,7 @@
   .topbar .who{font-size:13px;color:rgba(248,244,236,.6);display:flex;gap:16px;align-items:center}
   .topbar button{background:none;border:1px solid rgba(248,244,236,.3);color:var(--ivory);padding:8px 14px;font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
   .topbar button:hover{border-color:var(--gold-2);color:var(--gold-2)}
-  main{padding:44px 0 80px}
+  main.wrap{padding-top:36px;padding-bottom:80px}
   .login{max-width:420px;margin:10vh auto;background:var(--paper);border:1px solid var(--line);padding:44px 40px}
   .login h1{font-size:44px;margin:12px 0 26px}
   .login .field{margin-bottom:22px}
@@ -60,6 +60,28 @@
   .toast.show{opacity:1}
   .toast.bad{background:#a5432f}
   [hidden]{display:none!important}
+  .views{display:flex;gap:0;margin-bottom:34px;border-bottom:1px solid var(--line)}
+  .views button{background:none;border:0;border-bottom:2px solid transparent;padding:12px 20px;font:500 12px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;cursor:pointer;color:var(--muted);margin-bottom:-1px}
+  .views button.on{color:var(--ink);border-color:var(--gold)}
+  .export{margin-left:auto;background:var(--ink);color:var(--ivory);border:0;padding:11px 18px;font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+  .export:hover{background:#3f7a52}
+  .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .panel{background:var(--paper);border:1px solid var(--line);padding:28px}
+  .panel h3{font-size:30px;margin-bottom:8px}
+  .lbl{display:block;font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px}
+  .panel input{width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:8px 0;font-size:16px;outline:none}
+  .panel input:focus{border-color:var(--gold)}
+  .pw{display:flex;gap:10px}.pw input{flex:1}
+  .pw button{background:none;border:1px solid var(--line);padding:0 12px;font:500 10.5px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  .panel .btn{margin-top:6px}
+  .admins{list-style:none;margin-top:10px}
+  .admins li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .admins li:last-child{border-bottom:0}
+  .admins b{font-weight:400;word-break:break-all}
+  .admins .you{font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-left:8px}
+  .admins button{background:none;border:1px solid var(--line);padding:8px 10px;font:500 10.5px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
+  .admins button:hover{border-color:#a5432f;color:#a5432f}
+  @media (max-width:760px){.team-grid{grid-template-columns:1fr}.export{margin-left:0;flex:1 1 100%}}
   @media (max-width:760px){
     .card{grid-template-columns:1fr}
     .date{border-right:0;border-bottom:1px solid var(--line);padding:0 0 14px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
@@ -90,6 +112,33 @@
   </form>
 
   <div id="app" hidden>
+    <div class="views" id="views">
+      <button data-v="bookings" class="on">Bookings</button>
+      <button data-v="team">Team</button>
+    </div>
+
+    <div id="teamView" hidden>
+      <div class="head"><div><div class="eyebrow">Access</div><h1>Admin users</h1></div></div>
+      <div class="team-grid">
+        <form class="panel" id="addForm" autocomplete="off">
+          <h3>Add a user</h3>
+          <p class="small">They'll sign in on this page with the email and password below. If the email already has a login, they keep their current password.</p>
+          <label class="lbl" for="aEmail">Email</label>
+          <input id="aEmail" type="email" required maxlength="160" placeholder="staff@email.com" autocomplete="off">
+          <label class="lbl" for="aPass">Temporary password</label>
+          <div class="pw"><input id="aPass" type="text" minlength="8" maxlength="72" placeholder="At least 8 characters" autocomplete="new-password"><button type="button" id="genPw">Generate</button></div>
+          <div class="err" id="aErr" role="alert"></div>
+          <button class="btn btn-solid" id="aBtn">Add user</button>
+          <p class="small" style="margin-top:14px">Share the password privately (call or direct message), and ask them to keep it safe.</p>
+        </form>
+        <div class="panel">
+          <h3>Current admins</h3>
+          <ul class="admins" id="adminList"><li class="small">Loading…</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="bookView">
     <div class="head">
       <div><div class="eyebrow">Reservations</div><h1>Booking requests</h1></div>
       <div class="tabs" id="tabs">
@@ -106,13 +155,16 @@
         <option value="past">Past events</option>
         <option value="any">Any date</option>
       </select>
+      <button class="export" id="exportBtn" type="button" title="Download the bookings shown below as an Excel file">⤓ Export to Excel</button>
     </div>
     <div class="list" id="list"></div>
+    </div>
   </div>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <script src="config.js"></script>
 <script src="admin.js"></script>
 </body>
